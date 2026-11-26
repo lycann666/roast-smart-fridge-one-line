@@ -31,18 +31,29 @@ LINE = 'My smart fridge charges $9.99 a month to stay cold — I pay a subscript
 MAX_CHARS = 160
 
 
-def main() -> int:
+def validate_entry() -> None:
+    """Refuse an empty or over-long entry (gate 1-MAX_CHARS)."""
     if not LINE.strip() or len(LINE) > MAX_CHARS:
         print(f"entry invalid: {len(LINE)} chars", file=sys.stderr)
-        return 1
+        raise SystemExit(1)
+
+
+def write_entry() -> str:
+    """Write LINE to the output entry file and return its path."""
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     path = out_dir if out_dir.endswith("entry.txt") else os.path.join(out_dir, "entry.txt")
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         f.write(LINE)
+    return path
+
+
+def main() -> int:
+    validate_entry()
+    write_entry()
     print(LINE)
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())
